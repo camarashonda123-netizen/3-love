@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Test · Triángulo Amoroso</title>
+
+<style>
+:root {
+    --primary: #be185d;
+    --primary-light: #fce7f3;
+    --background: #faf7f9;
+    --card: #ffffff;
+    --text: #27202a;
+    --muted: #756b75;
+    --border: #eadde5;
+    --success: #15803d;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Inter, Arial, sans-serif;
+    background: linear-gradient(135deg, #fff7fb, #f9f5f7);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+.container {
+    width: min(760px, 94%);
+    margin: 40px auto;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.kicker {
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+h1 {
+    font-size: clamp(30px, 6vw, 46px);
+    margin: 8px 0 12px;
+}
+
+.subtitle {
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 650px;
+    margin: auto;
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: clamp(20px, 5vw, 35px);
+    box-shadow: 0 15px 50px rgba(80, 30, 60, .08);
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.progress {
+    height: 8px;
+    background: #f0e8ed;
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 10px 0 28px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--primary);
+    transition: width .3s ease;
+}
+
+.question {
+    font-size: clamp(21px, 4vw, 29px);
+    line-height: 1.3;
+    font-weight: 800;
+    margin-bottom: 25px;
+}
+
+.options {
+    display: grid;
+    gap: 12px;
+}
+
+.option {
+    width: 100%;
+    min-height: 58px;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    background: white;
+    padding: 13px 15px;
+    text-align: left;
+    font-size: 15px;
+    color: var(--text);
+    cursor: pointer;
+    transition: .2s;
+}
+
+.option:hover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.option.selected {
+    border: 2px solid var(--primary);
+    background: var(--primary-light);
+}
+
+.letter {
+    display: inline-flex;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #f5edf2;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+    gap: 12px;
+}
+
+button {
+    font-family: inherit;
+}
+
+.btn {
+    min-height: 48px;
+    padding: 11px 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: white;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.btn:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+/* RESULTADO */
+
+.result {
+    text-align: center;
+}
+
+.result h2 {
+    font-size: 30px;
+    margin: 10px 0;
+}
+
+.result-description {
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+.scores {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 25px 0;
+}
+
+.score-card {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 17px 10px;
+}
+
+.score-number {
+    display: block;
+    font-size: 30px;
+    color: var(--primary);
+    font-weight: 850;
+}
+
+.score-label {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.bar-container {
+    text-align: left;
+    margin: 18px 0;
+}
+
+.bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.bar {
+    height: 10px;
+    background: #eee6eb;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 20px;
+}
+
+.reflection {
+    margin-top: 25px;
+    padding: 18px;
+    border-radius: 15px;
+    background: #faf3f7;
+    text-align: left;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+.disclaimer {
+    margin-top: 25px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+@media(max-width: 550px) {
+
+    .container {
+        margin: 20px auto;
+    }
+
+    .card {
+        border-radius: 18px;
+    }
+
+    .scores {
+        grid-template-columns: 1fr;
+    }
+
+    .actions {
+        flex-direction: column-reverse;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header class="header">
+
+        <div class="kicker">
+            Test de reflexión
+        </div>
+
+        <h1>
+            ¿Con quién debería quedarse?
+        </h1>
+
+        <p class="subtitle">
+            Explora qué existe realmente entre ella, su novio y ese amigo
+            que está enamorado de ella.
+        </p>
+
+    </header>
+
+
+    <main class="card" id="test"></main>
+
+</div>
+
+
+<script>
+
+const preguntas = [
+
+{
+    pregunta:
+    "Si tu novio terminara contigo mañana, ¿qué sentirías principalmente?",
+
+    opciones: [
+        ["Sentiría que perdí a la persona con la que quiero estar", "novio", 3],
+        ["Me dolería, pero pensaría inmediatamente en mi amigo", "amigo", 2],
+        ["Sentiría sobre todo alivio", "ninguno", 3],
+        ["No sabría qué sentir", "ninguno", 1]
+    ]
+},
+
+{
+    pregunta:
+    "Si tu amigo comenzara una relación con otra mujer, tú…",
+
+    opciones: [
+        ["Me alegraría sinceramente por él", "novio", 1],
+        ["Sentiría celos o miedo de perderlo", "amigo", 3],
+        ["Sentiría que estoy perdiendo una oportunidad", "amigo", 2],
+        ["No me afectaría demasiado", "ninguno", 2]
+    ]
+},
+
+{
+    pregunta:
+    "Cuando imaginas tu vida dentro de cinco años, ¿con quién te resulta más natural imaginarla?",
+
+    opciones: [
+        ["Con mi novio", "novio", 3],
+        ["Con mi amigo", "amigo", 3],
+        ["Con ninguno de los dos", "ninguno", 3],
+        ["No puedo imaginarlo", "ninguno", 1]
+    ]
+},
+
+{
+    pregunta:
+    "¿Con quién puedes ser más auténtica, sin miedo a ser juzgada?",
+
+    opciones: [
+        ["Con mi novio", "novio", 3],
+        ["Con mi amigo", "amigo", 3],
+        ["Con ambos por igual", "ambos", 2],
+        ["Con ninguno", "ninguno", 2]
+    ]
+},
+
+{
+    pregunta:
+    "¿Qué sientes cuando tu amigo te demuestra que está enamorado de ti?",
+
+    opciones: [
+        ["Me gusta, pero no cambia lo que siento por mi novio", "novio", 3],
+        ["Me emociona y me hace cuestionar mi relación", "amigo", 3],
+        ["Me hace sentir deseada, aunque no sé si lo quiero", "amigo", 2],
+        ["Me incomoda", "ninguno", 2]
+    ]
+},
+
+{
+    pregunta:
+    "Si supieras con certeza que tu amigo dejará de estar enamorado de ti si eliges a tu novio, ¿seguirías con tu novio?",
+
+    opciones: [
+        ["Sí, porque quiero estar con mi novio", "novio", 4],
+        ["No estoy segura", "ninguno", 1],
+        ["Probablemente elegiría a mi amigo", "amigo", 4],
+        ["No elegiría a ninguno hasta aclararme", "ninguno", 3]
+    ]
+},
+
+{
+    pregunta:
+    "¿Qué problema de tu relación actual hace que el amigo parezca especialmente atractivo?",
+
+    opciones: [
+        ["Ninguno importante", "novio", 3],
+        ["Falta de atención o cariño", "amigo", 2],
+        ["Falta de pasión o emoción", "amigo", 2],
+        ["Hay problemas graves y estoy cansada", "ninguno", 3]
+    ]
+},
+
+{
+    pregunta:
+    "Si tu amigo dejara de buscar algo romántico contigo, ¿seguirías queriendo tenerlo en tu vida como amigo?",
+
+    opciones: [
+        ["Sí, nuestra amistad importa por sí misma", "novio", 2],
+        ["No estoy segura", "amigo", 1],
+        ["Creo que me dolería perder la posibilidad de estar con él", "amigo", 3],
+        ["Probablemente me alejaría", "ninguno", 2]
+    ]
+},
+
+{
+    pregunta:
+    "¿Con quién existe mayor confianza después de una discusión?",
+
+    opciones: [
+        ["Con mi novio", "novio", 3],
+        ["Con mi amigo", "amigo", 3],
+        ["Depende del problema", "ambos", 1],
+        ["Con ninguno", "ninguno", 2]
+    ]
+},
+
+{
+    pregunta:
+    "Si nadie pudiera juzgarte y ninguna de las dos personas pudiera enfadarse, ¿a quién elegirías hoy?",
+
+    opciones: [
+        ["A mi novio", "novio", 5],
+        ["A mi amigo", "amigo", 5],
+        ["A ninguno", "ninguno", 5],
+        ["Todavía no sé", "ninguno", 2]
+    ]
+},
+
+{
+    pregunta:
+    "¿Qué pesa más en tu deseo de estar con tu amigo?",
+
+    opciones: [
+        ["Lo conozco bien y tenemos valores compatibles", "amigo", 3],
+        ["La química y la atracción", "amigo", 2],
+        ["Me presta una atención que extraño de mi novio", "amigo", 2],
+        ["No sé si realmente quiero una relación con él", "ninguno", 2]
+    ]
+},
+
+{
+    pregunta:
+    "¿Tu novio sabe que existe esta tensión emocional con tu amigo?",
+
+    opciones: [
+        ["Sí, y podemos hablarlo honestamente", "novio", 3],
+        ["Sabe que somos amigos, pero no sabe lo que siento", "amigo", 2],
+        ["No, porque temo su reacción", "ninguno", 2],
+        ["No hay tensión, solo estoy reflexionando", "novio", 2]
+    ]
+}
+
+];
+
+
+let preguntaActual = 0;
+let respuestas = [];
+
+
+const test = document.getElementById("test");
+
+
+function mostrarPregunta() {
+
+    const pregunta = preguntas[preguntaActual];
+
+    const progreso =
+        Math.round(
+            (preguntaActual / preguntas.length) * 100
+        );
+
+
+    let html = `
+
+        <div class="progress-info">
+
+            <span>
+                Pregunta ${preguntaActual + 1}
+                de ${preguntas.length}
+            </span>
+
+            <span>
+                ${progreso}%
+            </span>
+
+        </div>
+
+
+        <div class="progress">
+
+            <div
+                class="progress-bar"
+                style="width:${progreso}%">
+            </div>
+
+        </div>
+
+
+        <div class="question">
+
+            ${pregunta.pregunta}
+
+        </div>
+
+
+        <div class="options">
+    `;
+
+
+    pregunta.opciones.forEach((opcion, index) => {
+
+        const seleccionada =
+            respuestas[preguntaActual] === index
+                ? "selected"
+                : "";
+
+
+        html += `
+
+            <button
+                class="option ${seleccionada}"
+                data-index="${index}">
+
+                <span class="letter">
+                    ${String.fromCharCode(65 + index)}
+                </span>
+
+                ${opcion[0]}
+
+            </button>
+
+        `;
+
+    });
+
+
+    html += `
+
+        </div>
+
+
+        <div class="actions">
+
+            <button
+                class="btn"
+                id="anterior"
+                ${preguntaActual === 0 ? "disabled" : ""}>
+
+                ← Anterior
+
+            </button>
+
+
+            <button
+                class="btn btn-primary"
+                id="siguiente"
+                ${respuestas[preguntaActual] == null ? "disabled" : ""}>
+
+                ${
+                    preguntaActual === preguntas.length - 1
+                    ? "Ver resultado"
+                    : "Continuar →"
+                }
+
+            </button>
+
+        </div>
+    `;
+
+
+    test.innerHTML = html;
+
+
+    document.querySelectorAll(".option")
+        .forEach(boton => {
+
+            boton.addEventListener("click", () => {
+
+                respuestas[preguntaActual] =
+                    Number(boton.dataset.index);
+
+                mostrarPregunta();
+
+            });
+
+        });
+
+
+    document
+        .getElementById("anterior")
+        .addEventListener("click", () => {
+
+            if (preguntaActual > 0) {
+
+                preguntaActual--;
+
+                mostrarPregunta();
+
+            }
+
+        });
+
+
+    document
+        .getElementById("siguiente")
+        .addEventListener("click", () => {
+
+            if (respuestas[preguntaActual] == null)
+                return;
+
+
+            if (
+                preguntaActual ===
+                preguntas.length - 1
+            ) {
+
+                mostrarResultado();
+
+            } else {
+
+                preguntaActual++;
+
+                mostrarPregunta();
+
+            }
+
+        });
+
+}
+
+
+function calcularResultado() {
+
+    let novio = 0;
+    let amigo = 0;
+    let ninguno = 0;
+
+
+    respuestas.forEach((respuesta, indice) => {
+
+        const opcion =
+            preguntas[indice].opciones[respuesta];
+
+
+        if (!opcion)
+            return;
+
+
+        const tipo = opcion[1];
+        const puntos = opcion[2];
+
+
+        if (tipo === "novio")
+            novio += puntos;
+
+        else if (tipo === "amigo")
+            amigo += puntos;
+
+        else if (tipo === "ninguno")
+            ninguno += puntos;
+
+        else if (tipo === "ambos") {
+
+            novio += puntos;
+            amigo += puntos;
+
+        }
+
+    });
+
+
+    const total =
+        novio + amigo + ninguno;
+
+
+    return {
+
+        novio: Math.round(novio / total * 100),
+
+        amigo: Math.round(amigo / total * 100),
+
+        ninguno: Math.round(ninguno / total * 100)
+
+    };
+
+}
+
+
+function mostrarResultado() {
+
+    const resultado =
+        calcularResultado();
+
+
+    const novio = resultado.novio;
+    const amigo = resultado.amigo;
+    const ninguno = resultado.ninguno;
+
+
+    let titulo;
+    let descripcion;
+    let reflexion;
+
+
+    /*
+        RESULTADO 1
+        DIFERENCIA PEQUEÑA
+    */
+
+    if (
+        Math.abs(novio - amigo) < 8 &&
+        ninguno < 45
+    ) {
+
+        titulo =
+            "Hay sentimientos divididos";
+
+
+        descripcion =
+            "Tus respuestas muestran que ninguno de los dos tiene una ventaja emocional clara. Existe una verdadera ambivalencia y probablemente necesitas entender mejor qué quieres antes de tomar una decisión.";
+
+
+        reflexion =
+            "Pregúntate si estás comparando a dos personas reales o si estás comparando una relación conocida con la posibilidad de algo nuevo.";
+
+    }
+
+
+    /*
+        RESULTADO 2
+        NINGUNO
+    */
+
+    else if (ninguno >= 45) {
+
+        titulo =
+            "Todavía no estás lista para elegir";
+
+
+        descripcion =
+            "Una parte importante de tus respuestas apunta a incertidumbre, desgaste o falta de claridad. El resultado no recomienda sustituir automáticamente una relación por otra.";
+
+
+        reflexion =
+            "Existe una tercera opción: tomar distancia del triángulo y descubrir qué quieres tú antes de decidir con quién estar.";
+
+    }
+
+
+    /*
+        RESULTADO 3
+        NOVIO
+    */
+
+    else if (novio > amigo) {
+
+        titulo =
+            "Tu relación actual tiene mayor fundamento";
+
+
+        descripcion =
+            "Tus respuestas favorecen al novio en aspectos importantes como vínculo emocional, confianza, estabilidad o proyecto de vida.";
+
+
+        reflexion =
+            "La atracción hacia el amigo puede ser completamente real sin significar necesariamente que exista una relación mejor. Pregúntate: ¿seguiría eligiendo a mi novio si mi amigo dejara de mostrar interés?";
+
+    }
+
+
+    /*
+        RESULTADO 4
+        AMIGO
+    */
+
+    else {
+
+        titulo =
+            "El amigo tiene una fuerte influencia emocional";
+
+
+        descripcion =
+            "Tus respuestas muestran una inclinación importante hacia el amigo. Sin embargo, eso no significa automáticamente que él sea la pareja adecuada.";
+
+
+        reflexion =
+            "Distingue entre compatibilidad real, novedad, deseo y la sensación de ser especialmente deseada por alguien.";
+
+    }
+
+
+    test.innerHTML = `
+
+        <div class="result">
+
+            <div class="kicker">
+                RESULTADO ORIENTATIVO
+            </div>
+
+
+            <h2>
+                ${titulo}
+            </h2>
+
+
+            <p class="result-description">
+                ${descripcion}
+            </p>
+
+
+            <div class="scores">
+
+                <div class="score-card">
+
+                    <span class="score-number">
+                        ${novio}%
+                    </span>
+
+                    <span class="score-label">
+                        Vínculo con novio
+                    </span>
+
+                </div>
+
+
+                <div class="score-card">
+
+                    <span class="score-number">
+                        ${amigo}%
+                    </span>
+
+                    <span class="score-label">
+                        Influencia del amigo
+                    </span>
+
+                </div>
+
+
+                <div class="score-card">
+
+                    <span class="score-number">
+                        ${ninguno}%
+                    </span>
+
+                    <span class="score-label">
+                        Necesidad de aclararte
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="bar-container">
+
+                <div class="bar-label">
+
+                    <span>Novio</span>
+
+                    <b>${novio}%</b>
+
+                </div>
+
+
+                <div class="bar">
+
+                    <div
+                        class="bar-fill"
+                        style="width:${novio}%">
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="bar-container">
+
+                <div class="bar-label">
+
+                    <span>Amigo</span>
+
+                    <b>${amigo}%</b>
+
+                </div>
+
+
+                <div class="bar">
+
+                    <div
+                        class="bar-fill"
+                        style="width:${amigo}%">
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="bar-container">
+
+                <div class="bar-label">
+
+                    <span>Aclaración personal</span>
+
+                    <b>${ninguno}%</b>
+
+                </div>
+
+
+                <div class="bar">
+
+                    <div
+                        class="bar-fill"
+                        style="width:${ninguno}%">
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="reflection">
+
+                <strong>
+                    Una pregunta para llevarte:
+                </strong>
+
+                <br><br>
+
+                ${reflexion}
+
+            </div>
+
+
+            <button
+                class="btn btn-primary"
+                id="reiniciar"
+                style="margin-top:20px">
+
+                ↻ Repetir test
+
+            </button>
+
+
+            <div class="disclaimer">
+
+                Este test es una herramienta de reflexión.
+                No constituye un diagnóstico psicológico ni
+                determina objetivamente con quién debe estar
+                una persona.
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    document
+        .getElementById("reiniciar")
+        .addEventListener("click", () => {
+
+            preguntaActual = 0;
+
+            respuestas = [];
+
+            mostrarPregunta();
+
+        });
+
+}
+
+
+mostrarPregunta();
+
+</script>
+
+</body>
+</html>
